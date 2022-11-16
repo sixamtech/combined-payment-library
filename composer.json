@@ -1,0 +1,23 @@
+{
+    "name": "mdalimrun/combined-payment-library",
+    "autoload": {
+        "psr-4": {
+            "Mdalimrun\\CombinedPaymentLibrary\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Md Al imrun Khandakar",
+            "email": "md.alimrun@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Mdalimrun\\CombinedPaymentLibrary\\PaymentServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "require": {}
+}
