@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('payment_settings', function (Blueprint $table) {
-            $table->uuid('id')->index()->change();
+            $table->uuid('id')->index();
             $table->string('key_name',191)->nullable();
             $table->longText('live_values')->nullable();
             $table->longText('test_values')->nullable();
