@@ -10,6 +10,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Mdalimrun\CombinedPaymentLibrary\Models\Payment;
 use Mdalimrun\CombinedPaymentLibrary\Traits\Processor;
 
 class SslCommerzPaymentController extends Controller
@@ -19,8 +20,7 @@ class SslCommerzPaymentController extends Controller
     public function index(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'currency_code' => 'required|uuid',
-            'customer_id' => 'required',
+            'payment_id' => 'required|uuid'
         ]);
 
         if ($validator->fails()) {
@@ -28,6 +28,7 @@ class SslCommerzPaymentController extends Controller
         }
 
         $config = $this->business_config('sslcommerz', 'payment_config');
+        $data = Payment::where(['id' => $request['payment_id']])->first();
         $customer = DB::table('users')->where(['id' => $request['customer_id']])->first();
 
         if (!is_null($config) && $config->mode == 'live') {
@@ -36,20 +37,18 @@ class SslCommerzPaymentController extends Controller
             $values = $config->test_values;
         }
 
-        $cart_total = 1000;
+        $payment_amount = $data['payment_amount'];
 
         $post_data = array();
-        $post_data['store_id'] = $values['store_id'];
-        $post_data['store_passwd'] = $values['store_password'];
-        $post_data['total_amount'] = round($cart_total, 2);
-        $post_data['currency'] = $request['currency_code'];
+        $post_data['store_id'] = $values['store_id']??'custo5cc042f7abf4c';
+        $post_data['store_passwd'] = $values['store_password']??'custo5cc042f7abf4c@ssl';
+        $post_data['total_amount'] = round($payment_amount, 2);
+        $post_data['currency'] = $data['currency_code'];
         $post_data['tran_id'] = uniqid();
 
-        $callback = $request->has('callback') ? '&&callback=' . $request['callback'] : '';
-
-        $post_data['success_url'] = url('/') . '/payment/sslcommerz/success?' . $callback;
-        $post_data['fail_url'] = url('/') . '/payment/sslcommerz/failed?' . $callback;
-        $post_data['cancel_url'] = url('/') . '/payment/sslcommerz/canceled?' . $callback;
+        $post_data['success_url'] = url('/') . '/payment/sslcommerz/success?payment_id='.$data['id'];
+        $post_data['fail_url'] = url('/') . '/payment/sslcommerz/failed';
+        $post_data['cancel_url'] = url('/') . '/payment/sslcommerz/canceled';
 
         # CUSTOMER INFORMATION
         $post_data['cus_name'] = $customer->first_name . ' ' . $customer->last_name;
@@ -125,6 +124,7 @@ class SslCommerzPaymentController extends Controller
 
     public function success(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
+        dd($request->all());
         $tran_id = $request->input('tran_id');
         $request['payment_method'] = 'ssl_commerz';
         //$response = place_booking_request($request->user->id, $request, $tran_id);

@@ -38,7 +38,7 @@ class PaymentServiceProvider extends ServiceProvider
         $this->app->make(Payment::class);
 
         // Views
-        $this->loadViewsFrom(__DIR__ . '/views', 'combined-payment-client');
+        $this->loadViewsFrom(__DIR__ . '/views', 'payment');
     }
 }
 
