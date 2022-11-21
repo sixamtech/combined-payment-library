@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Mdalimrun\CombinedPaymentLibrary\Models\Payment;
 use Mdalimrun\CombinedPaymentLibrary\Traits\Processor;
@@ -21,8 +22,9 @@ class SslCommerzPaymentController extends Controller
     private $store_password;
     private bool $host;
     private string $direct_api_url;
+    private $payment;
 
-    public function __construct()
+    public function __construct(Payment $payment)
     {
         $config = $this->payment_config('sslcommerz', 'payment_config');
         if (!is_null($config) && $config->mode == 'live') {
@@ -41,6 +43,8 @@ class SslCommerzPaymentController extends Controller
             $this->direct_api_url = "https://sandbox.sslcommerz.com/gwprocess/v4/api.php";
             $this->host = true;
         }
+
+        $this->payment = $payment;
     }
 
     public function index(Request $request)
@@ -53,7 +57,7 @@ class SslCommerzPaymentController extends Controller
             return response()->json($this->response_formatter(DEFAULT_400, null, $this->error_processor($validator)), 400);
         }
 
-        $data = Payment::where(['uuid' => $request['payment_id']])->first();
+        $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
         $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
         $payment_amount = $data['payment_amount'];
 
@@ -174,14 +178,25 @@ class SslCommerzPaymentController extends Controller
     public function success(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
         if ($request['status'] == 'VALID' && $this->SSLCOMMERZ_hash_verify($this->getStorePassword(), $request)) {
-            $request->input('tran_id');
-            $request['payment_method'] = 'ssl_commerz';
+
+            $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
+
+            if ($data->has('hook')) {
+                Http::post($data->hook, [
+                    'payment_method' => 'ssl_commerz',
+                    'transaction_id' => $request->input('tran_id'),
+                    'payment_id' => $request->input('payment_id'),
+                ]);
+            }
+
+            if ($data->has('callback')) {
+                return redirect($request['callback'] . '?payment_status=success');
+            }
+
+            return response()->json($this->response_formatter(DEFAULT_200), 200);
         }
 
-        if ($request->has('callback')) {
-            return redirect($request['callback'] . '?payment_status=success');
-        }
-        return response()->json($this->response_formatter(DEFAULT_200), 200);
+        return response()->json($this->response_formatter(DEFAULT_404), 200);
     }
 
     public function failed(Request $request): JsonResponse|Redirector|RedirectResponse|Application
