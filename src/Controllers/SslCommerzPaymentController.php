@@ -27,9 +27,9 @@ class SslCommerzPaymentController extends Controller
             return response()->json($this->response_formatter(DEFAULT_400, null, $this->error_processor($validator)), 400);
         }
 
-        $config = $this->business_config('sslcommerz', 'payment_config');
-        $data = Payment::where(['id' => $request['payment_id']])->first();
-        $customer = DB::table('users')->where(['id' => $request['customer_id']])->first();
+        $config = $this->payment_config('sslcommerz', 'payment_config');
+        $data = Payment::where(['uuid' => $request['payment_id']])->first();
+        $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
 
         if (!is_null($config) && $config->mode == 'live') {
             $values = $config->live_values;
@@ -40,8 +40,8 @@ class SslCommerzPaymentController extends Controller
         $payment_amount = $data['payment_amount'];
 
         $post_data = array();
-        $post_data['store_id'] = $values['store_id']??'custo5cc042f7abf4c';
-        $post_data['store_passwd'] = $values['store_password']??'custo5cc042f7abf4c@ssl';
+        $post_data['store_id'] = $values['store_id'];
+        $post_data['store_passwd'] = $values['store_password'];
         $post_data['total_amount'] = round($payment_amount, 2);
         $post_data['currency'] = $data['currency_code'];
         $post_data['tran_id'] = uniqid();

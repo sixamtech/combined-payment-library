@@ -45,10 +45,10 @@ trait Processor
         }
     }
 
-    public function business_config($key, $settings_type): object|null
+    public function payment_config($key, $settings_type): object|null
     {
         try {
-            $config = DB::table('business_settings')->where('key_name', $key)
+            $config = DB::table('payment_settings')->where('key_name', $key)
                 ->where('settings_type', $settings_type)->first();
         } catch (Exception $exception) {
             return null;
