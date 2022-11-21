@@ -17,6 +17,32 @@ class SslCommerzPaymentController extends Controller
 {
     use Processor;
 
+    private $store_id;
+    private $store_password;
+    private bool $host;
+    private string $direct_api_url;
+
+    public function __construct()
+    {
+        $config = $this->payment_config('sslcommerz', 'payment_config');
+        if (!is_null($config) && $config->mode == 'live') {
+            $values = json_decode($config->live_values);
+        } elseif (!is_null($config) && $config->mode == 'test') {
+            $values = json_decode($config->test_values);
+        }
+        $this->store_id = $values->store_id;
+        $this->store_password = $values->store_password;
+
+        # REQUEST SEND TO SSLCOMMERZ
+        if ($config->mode == 'live') {
+            $this->direct_api_url = "https://securepay.sslcommerz.com/gwprocess/v4/api.php";
+            $this->host = false;
+        } else {
+            $this->direct_api_url = "https://sandbox.sslcommerz.com/gwprocess/v4/api.php";
+            $this->host = true;
+        }
+    }
+
     public function index(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -27,26 +53,18 @@ class SslCommerzPaymentController extends Controller
             return response()->json($this->response_formatter(DEFAULT_400, null, $this->error_processor($validator)), 400);
         }
 
-        $config = $this->payment_config('sslcommerz', 'payment_config');
         $data = Payment::where(['uuid' => $request['payment_id']])->first();
         $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
-
-        if (!is_null($config) && $config->mode == 'live') {
-            $values = json_decode($config->live_values);
-        } elseif (!is_null($config) && $config->mode == 'test') {
-            $values = json_decode($config->test_values);
-        }
-
         $payment_amount = $data['payment_amount'];
 
         $post_data = array();
-        $post_data['store_id'] = $values->store_id;
-        $post_data['store_passwd'] = $values->store_password;
+        $post_data['store_id'] = $this->store_id;
+        $post_data['store_passwd'] = $this->store_password;
         $post_data['total_amount'] = round($payment_amount, 2);
         $post_data['currency'] = $data['currency_code'];
         $post_data['tran_id'] = uniqid();
 
-        $post_data['success_url'] = url('/') . '/payment/sslcommerz/success?payment_id='.$data['uuid'];
+        $post_data['success_url'] = url('/') . '/payment/sslcommerz/success?payment_id=' . $data['uuid'];
         $post_data['fail_url'] = url('/') . '/payment/sslcommerz/failed';
         $post_data['cancel_url'] = url('/') . '/payment/sslcommerz/canceled';
 
@@ -83,23 +101,14 @@ class SslCommerzPaymentController extends Controller
         $post_data['value_c'] = "ref003";
         $post_data['value_d'] = "ref004";
 
-        # REQUEST SEND TO SSLCOMMERZ
-        if ($config->mode == 'live') {
-            $direct_api_url = "https://securepay.sslcommerz.com/gwprocess/v4/api.php";
-            $host = false;
-        } else {
-            $direct_api_url = "https://sandbox.sslcommerz.com/gwprocess/v4/api.php";
-            $host = true;
-        }
-
         $handle = curl_init();
-        curl_setopt($handle, CURLOPT_URL, $direct_api_url);
+        curl_setopt($handle, CURLOPT_URL, $this->direct_api_url);
         curl_setopt($handle, CURLOPT_TIMEOUT, 30);
         curl_setopt($handle, CURLOPT_CONNECTTIMEOUT, 30);
         curl_setopt($handle, CURLOPT_POST, 1);
         curl_setopt($handle, CURLOPT_POSTFIELDS, $post_data);
         curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, $host); # KEEP IT FALSE IF YOU RUN FROM LOCAL PC
+        curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, $this->host); # KEEP IT FALSE IF YOU RUN FROM LOCAL PC
 
         $content = curl_exec($handle);
 
@@ -122,11 +131,52 @@ class SslCommerzPaymentController extends Controller
         }
     }
 
+    # FUNCTION TO CHECK HASH VALUE
+    protected function SSLCOMMERZ_hash_verify($store_passwd, $post_data)
+    {
+        if (isset($post_data) && isset($post_data['verify_sign']) && isset($post_data['verify_key'])) {
+            # NEW ARRAY DECLARED TO TAKE VALUE OF ALL POST
+            $pre_define_key = explode(',', $post_data['verify_key']);
+
+            $new_data = array();
+            if (!empty($pre_define_key)) {
+                foreach ($pre_define_key as $value) {
+                    if (isset($post_data[$value])) {
+                        $new_data[$value] = ($post_data[$value]);
+                    }
+                }
+            }
+            # ADD MD5 OF STORE PASSWORD
+            $new_data['store_passwd'] = md5($store_passwd);
+
+            # SORT THE KEY AS BEFORE
+            ksort($new_data);
+
+            $hash_string = "";
+            foreach ($new_data as $key => $value) {
+                $hash_string .= $key . '=' . ($value) . '&';
+            }
+            $hash_string = rtrim($hash_string, '&');
+
+            if (md5($hash_string) == $post_data['verify_sign']) {
+
+                return true;
+            } else {
+                $this->error = "Verification signature not matched";
+                return false;
+            }
+        } else {
+            $this->error = 'Required data mission. ex: verify_key, verify_sign';
+            return false;
+        }
+    }
+
     public function success(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
-        $tran_id = $request->input('tran_id');
-        $request['payment_method'] = 'ssl_commerz';
-        //$response = place_booking_request($request->user->id, $request, $tran_id);
+        if ($request['status'] == 'VALID' && $this->SSLCOMMERZ_hash_verify($this->getStorePassword(), $request)) {
+            $request->input('tran_id');
+            $request['payment_method'] = 'ssl_commerz';
+        }
 
         if ($request->has('callback')) {
             return redirect($request['callback'] . '?payment_status=success');
