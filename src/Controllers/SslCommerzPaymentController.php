@@ -32,21 +32,21 @@ class SslCommerzPaymentController extends Controller
         $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
 
         if (!is_null($config) && $config->mode == 'live') {
-            $values = $config->live_values;
+            $values = json_decode($config->live_values);
         } elseif (!is_null($config) && $config->mode == 'test') {
-            $values = $config->test_values;
+            $values = json_decode($config->test_values);
         }
 
         $payment_amount = $data['payment_amount'];
 
         $post_data = array();
-        $post_data['store_id'] = $values['store_id'];
-        $post_data['store_passwd'] = $values['store_password'];
+        $post_data['store_id'] = $values->store_id;
+        $post_data['store_passwd'] = $values->store_password;
         $post_data['total_amount'] = round($payment_amount, 2);
         $post_data['currency'] = $data['currency_code'];
         $post_data['tran_id'] = uniqid();
 
-        $post_data['success_url'] = url('/') . '/payment/sslcommerz/success?payment_id='.$data['id'];
+        $post_data['success_url'] = url('/') . '/payment/sslcommerz/success?payment_id='.$data['uuid'];
         $post_data['fail_url'] = url('/') . '/payment/sslcommerz/failed';
         $post_data['cancel_url'] = url('/') . '/payment/sslcommerz/canceled';
 
@@ -124,7 +124,6 @@ class SslCommerzPaymentController extends Controller
 
     public function success(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
-        dd($request->all());
         $tran_id = $request->input('tran_id');
         $request['payment_method'] = 'ssl_commerz';
         //$response = place_booking_request($request->user->id, $request, $tran_id);

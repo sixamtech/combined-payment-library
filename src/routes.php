@@ -8,9 +8,9 @@ Route::group(['prefix' => 'payment'], function () {
     //SSLCOMMERZ
     Route::group(['prefix' => 'sslcommerz', 'as' => 'sslcommerz.'], function () {
         Route::get('pay', [SslCommerzPaymentController::class, 'index']);
-        /*Route::post('success', 'SslCommerzPaymentController@success');
-        Route::post('failed', 'SslCommerzPaymentController@failed');
-        Route::post('canceled', 'SslCommerzPaymentController@calceled');*/
+        Route::post('success', [SslCommerzPaymentController::class, 'success']);
+        Route::post('failed', [SslCommerzPaymentController::class, 'failed']);
+        Route::post('canceled', [SslCommerzPaymentController::class, 'canceled']);
     });
 
     //STRIPE
