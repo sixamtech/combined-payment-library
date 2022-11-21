@@ -177,7 +177,7 @@ class SslCommerzPaymentController extends Controller
 
     public function success(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
-        if ($request['status'] == 'VALID' && $this->SSLCOMMERZ_hash_verify($this->getStorePassword(), $request)) {
+        if ($request['status'] == 'VALID' && $this->SSLCOMMERZ_hash_verify($this->store_password, $request)) {
 
             $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
 
