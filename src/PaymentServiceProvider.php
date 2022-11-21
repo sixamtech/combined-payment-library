@@ -4,6 +4,8 @@ namespace Mdalimrun\CombinedPaymentLibrary;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\ServiceProvider;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\SslCommerzPaymentController;
+use Mdalimrun\CombinedPaymentLibrary\Models\Payment;
 
 class PaymentServiceProvider extends ServiceProvider
 {
@@ -30,7 +32,11 @@ class PaymentServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Controllers
-        $this->app->make('Mdalimrun\CombinedPaymentLibrary\Controllers\SslCommerzPaymentController');
+        $this->app->make(SslCommerzPaymentController::class);
+
+        // Models
+        $this->app->make(Payment::class);
+
         // Views
         $this->loadViewsFrom(__DIR__ . '/views', 'combined-payment-client');
     }
