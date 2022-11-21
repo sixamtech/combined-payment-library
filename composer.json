@@ -3,7 +3,10 @@
     "autoload": {
         "psr-4": {
             "Mdalimrun\\CombinedPaymentLibrary\\": "src/"
-        }
+        },
+        "files": [
+            "Library/Responses.php"
+        ]
     },
     "authors": [
         {
