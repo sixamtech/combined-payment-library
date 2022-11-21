@@ -5,7 +5,7 @@
             "Mdalimrun\\CombinedPaymentLibrary\\": "src/"
         },
         "files": [
-            "Library/Responses.php"
+            "src/Library/Responses.php"
         ]
     },
     "authors": [
