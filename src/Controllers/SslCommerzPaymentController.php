@@ -70,8 +70,8 @@ class SslCommerzPaymentController extends Controller
         $post_data['tran_id'] = uniqid();
 
         $post_data['success_url'] = url('/') . '/payment/sslcommerz/success?payment_id=' . $data['uuid'];
-        $post_data['fail_url'] = url('/') . '/payment/sslcommerz/failed';
-        $post_data['cancel_url'] = url('/') . '/payment/sslcommerz/canceled';
+        $post_data['fail_url'] = url('/') . '/payment/sslcommerz/failed?payment_id=' . $data['uuid'];
+        $post_data['cancel_url'] = url('/') . '/payment/sslcommerz/canceled?payment_id=' . $data['uuid'];
 
         # CUSTOMER INFORMATION
         $post_data['cus_name'] = $customer->first_name . ' ' . $customer->last_name;
@@ -202,8 +202,9 @@ class SslCommerzPaymentController extends Controller
 
     public function failed(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
-        if ($request->has('callback')) {
-            return redirect($request['callback'] . '?payment_status=failed');
+        $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
+        if (!isNull($data['callback'])) {
+            return redirect($data['callback'] . '?payment_status=failed');
         }
 
         return response()->json($this->response_formatter(DEFAULT_204), 200);
@@ -211,8 +212,9 @@ class SslCommerzPaymentController extends Controller
 
     public function canceled(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
-        if ($request->has('callback')) {
-            return redirect($request['callback'] . '?payment_status=canceled');
+        $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
+        if (!isNull($data['callback'])) {
+            return redirect($data['callback'] . '?payment_status=canceled');
         }
 
         return response()->json($this->response_formatter(DEFAULT_204), 200);
