@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Mdalimrun\CombinedPaymentLibrary\Models\Payment;
 use Mdalimrun\CombinedPaymentLibrary\Traits\Processor;
+use function PHPUnit\Framework\isNull;
 
 class SslCommerzPaymentController extends Controller
 {
@@ -181,7 +182,7 @@ class SslCommerzPaymentController extends Controller
 
             $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
 
-            if ($data->has('hook')) {
+            if (!isNull($data['hook'])) {
                 Http::post($data->hook, [
                     'payment_method' => 'ssl_commerz',
                     'transaction_id' => $request->input('tran_id'),
@@ -189,7 +190,7 @@ class SslCommerzPaymentController extends Controller
                 ]);
             }
 
-            if ($data->has('callback')) {
+            if (!isNull($data['callback'])) {
                 return redirect($request['callback'] . '?payment_status=success');
             }
 
