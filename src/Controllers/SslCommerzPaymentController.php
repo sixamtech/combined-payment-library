@@ -5,15 +5,14 @@ namespace Mdalimrun\CombinedPaymentLibrary\Controllers;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
 use Mdalimrun\CombinedPaymentLibrary\Models\Payment;
 use Mdalimrun\CombinedPaymentLibrary\Traits\Processor;
-use function PHPUnit\Framework\isNull;
 
 class SslCommerzPaymentController extends Controller
 {
@@ -182,7 +181,7 @@ class SslCommerzPaymentController extends Controller
 
             $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
 
-            if (!isNull($data['hook'])) {
+            if ($data['hook'] != null) {
                 Http::post($data->hook, [
                     'payment_method' => 'ssl_commerz',
                     'transaction_id' => $request->input('tran_id'),
@@ -190,8 +189,8 @@ class SslCommerzPaymentController extends Controller
                 ]);
             }
 
-            if (!isNull($data['callback'])) {
-                return redirect($request['callback'] . '?payment_status=success');
+            if ($data['callback'] != null) {
+                return redirect($data['callback'] . '?payment_status=success');
             }
 
             return response()->json($this->response_formatter(DEFAULT_200), 200);
@@ -203,7 +202,7 @@ class SslCommerzPaymentController extends Controller
     public function failed(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
         $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
-        if (!isNull($data['callback'])) {
+        if ($data['callback'] != null) {
             return redirect($data['callback'] . '?payment_status=failed');
         }
 
@@ -213,7 +212,7 @@ class SslCommerzPaymentController extends Controller
     public function canceled(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
         $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
-        if (!isNull($data['callback'])) {
+        if ($data['callback'] != null) {
             return redirect($data['callback'] . '?payment_status=canceled');
         }
 
