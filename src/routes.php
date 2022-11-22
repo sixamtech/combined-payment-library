@@ -34,8 +34,8 @@ Route::group(['prefix' => 'payment'], function () {
     //PAYPAL
     Route::group(['prefix' => 'paypal', 'as' => 'paypal.'], function () {
         Route::get('pay', 'PaypalPaymentController@index');
-        Route::any('callback', 'StripePaymentController@callback')->name('callback');
-        Route::any('failed', 'StripePaymentController@failed')->name('failed');
+        Route::any('callback', 'PaypalPaymentController@callback')->name('callback');
+        Route::any('failed', 'PaypalPaymentController@failed')->name('failed');
     });
 
     //SENANG-PAY
