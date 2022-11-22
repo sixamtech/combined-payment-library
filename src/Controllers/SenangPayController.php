@@ -66,10 +66,10 @@ class SenangPayController extends Controller
                     'payment_id' => session('payment_id'),
                 ]);
 
-                $this->payment::where(['id' => $request['payment_id']])->update([
+                $this->payment::where(['id' => session('payment_id')])->update([
                     'payment_method' => 'senang_pay',
                     'is_paid' => 1,
-                    'transaction_id' => session('payment_id'),
+                    'transaction_id' => $request['transaction_id'],
                 ]);
             }
             if ($data['callback'] != null) {
