@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Mdalimrun\CombinedPaymentLibrary\Models\Payment;
 use Mdalimrun\CombinedPaymentLibrary\Traits\Processor;
+use Stripe\Stripe;
 
 class StripePaymentController extends Controller
 {
@@ -32,7 +33,7 @@ class StripePaymentController extends Controller
         $this->payment = $payment;
     }
 
-    public function index(Request $request)
+    public function index(Request $request): View|Factory|JsonResponse|Application
     {
         $validator = Validator::make($request->all(), [
             'payment_id' => 'required|uuid'
@@ -46,61 +47,47 @@ class StripePaymentController extends Controller
         if (!isset($data)) {
             return response()->json($this->response_formatter(DEFAULT_204), 200);
         }
-
-        $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
         $config = $this->config_values;
 
-        return view('payments.stripe', compact('customer', 'data', 'config'));
+        return view('payments.stripe', compact('data', 'config'));
     }
-
 
     public function payment_process_3d(Request $request): JsonResponse
     {
-        $params = explode('&&', base64_decode($request['token']));
-
-        foreach ($params as $param) {
-            $data = explode('=', $param);
-            if ($data[0] == 'access_token') {
-                $access_token = $data[1];
-            } elseif ($data[0] == 'callback') {
-                $callback = $data[1];
-            } elseif ($data[0] == 'zone_id') {
-                $zone_id = $data[1];
-            } elseif ($data[0] == 'service_schedule') {
-                $service_schedule = $data[1];
-            } elseif ($data[0] == 'service_address_id') {
-                $service_address_id = $data[1];
-            }
+        $data = $this->payment::where(['id' => $request['payment_id']])->where(['is_paid' => 0])->first();
+        if (!isset($data)) {
+            return response()->json($this->response_formatter(DEFAULT_204), 200);
         }
+        $payment_amount = $data['payment_amount'];
 
-        $booking_amount = cart_total($access_token);
-        $config = business_config('stripe', 'payment_config');
-        Stripe::setApiKey($config->live_values['api_key']);
+        Stripe::setApiKey($this->config_values->api_key);
         header('Content-Type: application/json');
-        $currency_code = currency_code();
+        $currency_code = $data->currency_code;
 
-        $business_name = business_config('business_name', 'business_information');
-        $business_logo = business_config('business_logo', 'business_information');
-
-        $query_parameter = 'access_token=' . $access_token;
-        $query_parameter .= isset($callback) ? '&&callback=' . $callback : '';
-        $query_parameter .= '&&zone_id=' . $zone_id . '&&service_schedule=' . $service_schedule . '&&service_address_id=' . $service_address_id;
+        if ($data['additional_data'] != null) {
+            $business = json_decode($data['additional_data']);
+            $business_name = $business->business_name ?? "";
+            $business_logo = $business->business_logo ?? "";
+        } else {
+            $business_name = "";
+            $business_logo = "";
+        }
 
         $checkout_session = \Stripe\Checkout\Session::create([
             'payment_method_types' => ['card'],
             'line_items' => [[
                 'price_data' => [
                     'currency' => $currency_code ?? 'usd',
-                    'unit_amount' => round($booking_amount, 2) * 100,
+                    'unit_amount' => round($payment_amount, 2) * 100,
                     'product_data' => [
-                        'name' => $business_name->live_values,
-                        'images' => [asset('storage/app/public/business') . '/' . $business_logo->live_values],
+                        'name' => $business_name,
+                        'images' => [$business_logo],
                     ],
                 ],
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => url('/') . '/payment/stripe/success?' . $query_parameter,
+            'success_url' => url('/') . '/payment/stripe/success?payment_id' . $data->id,
             'cancel_url' => url()->previous(),
         ]);
         return response()->json(['id' => $checkout_session->id]);
