@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\PaystackController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaytmController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\RazorPayController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\SenangPayController;
@@ -57,9 +58,9 @@ Route::group(['prefix' => 'payment'], function () {
 
     //PAYSTACK
     Route::group(['prefix' => 'paystack', 'as' => 'paystack.'], function () {
-        Route::get('pay', 'PaystackController@index')->name('pay');
-        Route::post('payment', 'PaystackController@redirectToGateway')->name('payment')->WithoutMiddleware('detectUser');
-        Route::get('callback', 'PaystackController@handleGatewayCallback')->name('callback');
+        Route::get('pay', [PaystackController::class, 'index'])->name('pay');
+        Route::post('payment', [PaystackController::class, 'redirectToGateway'])->name('payment');
+        Route::get('callback', [PaystackController::class, 'handleGatewayCallback'])->name('callback');
     });
 
 });
