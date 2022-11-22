@@ -23,6 +23,7 @@
     },
     "minimum-stability": "dev",
     "require": {
-        "doctrine/dbal": "3.5.x-dev"
+        "doctrine/dbal": "3.5.x-dev",
+        "stripe/stripe-php": "^10.0"
     }
 }

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\SslCommerzPaymentController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\StripePaymentController;
 
 Route::group(['prefix' => 'payment'], function () {
 
@@ -15,9 +16,9 @@ Route::group(['prefix' => 'payment'], function () {
 
     //STRIPE
     Route::group(['prefix' => 'stripe', 'as' => 'stripe.'], function () {
-        Route::get('pay', 'StripePaymentController@index');
-        Route::get('token', 'StripePaymentController@payment_process_3d')->name('token')->WithoutMiddleware('detectUser');
-        Route::any('success', 'StripePaymentController@success')->name('success')->WithoutMiddleware('detectUser');
+        Route::get('pay', [StripePaymentController::class, 'index']);
+        Route::get('pay', [StripePaymentController::class, 'payment_process_3d'])->name('token');
+        Route::get('pay', [StripePaymentController::class, 'success'])->name('success');
     });
 
     //RAZOR-PAY
