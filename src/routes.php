@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\RazorPayController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\SslCommerzPaymentController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\StripePaymentController;
 
@@ -23,8 +24,8 @@ Route::group(['prefix' => 'payment'], function () {
 
     //RAZOR-PAY
     Route::group(['prefix' => 'razor-pay', 'as' => 'razor-pay.'], function () {
-        Route::get('pay', 'RazorPayController@index');
-        Route::post('payment', 'RazorPayController@payment')->name('payment')->WithoutMiddleware('detectUser');
+        Route::get('pay', [RazorPayController::class,'index']);
+        Route::post('payment', [RazorPayController::class,'payment'])->name('payment');
     });
 
     //PAYPAL
