@@ -8,11 +8,10 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Mdalimrun\CombinedPaymentLibrary\Models\Payment;
 use Mdalimrun\CombinedPaymentLibrary\Traits\Processor;
+use Stripe\Checkout\Session;
 use Stripe\Stripe;
 
 class StripePaymentController extends Controller
@@ -73,7 +72,7 @@ class StripePaymentController extends Controller
             $business_logo = url('/');
         }
 
-        $checkout_session = \Stripe\Checkout\Session::create([
+        $checkout_session = Session::create([
             'payment_method_types' => ['card'],
             'line_items' => [[
                 'price_data' => [
@@ -87,7 +86,7 @@ class StripePaymentController extends Controller
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => url('/') . '/payment/stripe/success?payment_id' . $data->id,
+            'success_url' => url('/') . '/payment/stripe/success?session_id={CHECKOUT_SESSION_ID}&payment_id=' . $data->id,
             'cancel_url' => url()->previous(),
         ]);
         return response()->json(['id' => $checkout_session->id]);
@@ -95,17 +94,29 @@ class StripePaymentController extends Controller
 
     public function success(Request $request)
     {
-        $tran_id = Str::random(6) . '-' . rand(1, 1000);;
-        $request['payment_method'] = 'stripe';
-        //  $response = place_booking_request($request['access_token'], $request, $tran_id);
+        Stripe::setApiKey($this->config_values->api_key);
+        $session = Session::retrieve($request->get('session_id'));
 
-        /*if ($response['flag'] == 'success') {
-            if ($request->has('callback')) {
-                return redirect($request['callback'] . '?payment_status=success');
-            } else {
-                return response()->json($this->response_formatter(DEFAULT_200), 200);
+        if ($session->payment_status == 'paid' && $session->status == 'complete') {
+            $data = $this->payment::where(['id' => $request['payment_id']])->first();
+            if (isset($data) && function_exists($data->hook)) {
+                call_user_func($data->hook, [
+                    'payment_method' => 'stripe',
+                    'transaction_id' => $request->input('tran_id'),
+                    'payment_id' => $request->input('payment_id'),
+                ]);
+
+                $this->payment::where(['id' => $request['payment_id']])->update([
+                    'payment_method' => 'ssl_commerz',
+                    'is_paid' => 1,
+                    'transaction_id' => $request->input('tran_id')
+                ]);
             }
-        }*/
-        return response()->json($this->response_formatter(DEFAULT_204), 200);
+            if ($data['callback'] != null) {
+                return redirect($data['callback'] . '?payment_status=success');
+            }
+            return response()->json($this->response_formatter(DEFAULT_200), 200);
+        }
+        return response()->json($this->response_formatter(DEFAULT_404), 200);
     }
 }
