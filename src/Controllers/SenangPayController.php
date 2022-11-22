@@ -20,6 +20,7 @@ class SenangPayController extends Controller
     use Processor;
 
     private $config_values;
+
     private Payment $payment;
 
     public function __construct(Payment $payment)

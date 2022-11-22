@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaytmController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\RazorPayController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\SenangPayController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\SslCommerzPaymentController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\StripePaymentController;
 
@@ -38,7 +39,8 @@ Route::group(['prefix' => 'payment'], function () {
 
     //SENANG-PAY
     Route::group(['prefix' => 'senang-pay', 'as' => 'senang-pay.'], function () {
-        Route::get('pay', 'SenangPayController@index');
+        Route::get('pay', [SenangPayController::class, 'index']);
+        Route::any('callback', [SenangPayController::class, 'return_senang_pay']);
     });
 
     //PAYTM
