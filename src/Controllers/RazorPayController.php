@@ -34,8 +34,8 @@ class RazorPayController extends Controller
 
         if ($razor) {
             $config = array(
-                'api_key' => $razor['api_key'],
-                'api_secret' => $razor['api_secret']
+                'api_key' => $razor->api_key,
+                'api_secret' => $razor->api_secret
             );
             Config::set('razor_config', $config);
         }
