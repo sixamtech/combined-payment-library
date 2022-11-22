@@ -49,7 +49,7 @@ class SslCommerzPaymentController extends Controller
     public function index(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'payment_id' => 'required|uuid'
+            'payment_id' => 'required|id'
         ]);
 
         if ($validator->fails()) {
@@ -71,9 +71,9 @@ class SslCommerzPaymentController extends Controller
         $post_data['currency'] = $data['currency_code'];
         $post_data['tran_id'] = uniqid();
 
-        $post_data['success_url'] = url('/') . '/payment/sslcommerz/success?payment_id=' . $data['uuid'];
-        $post_data['fail_url'] = url('/') . '/payment/sslcommerz/failed?payment_id=' . $data['uuid'];
-        $post_data['cancel_url'] = url('/') . '/payment/sslcommerz/canceled?payment_id=' . $data['uuid'];
+        $post_data['success_url'] = url('/') . '/payment/sslcommerz/success?payment_id=' . $data['id'];
+        $post_data['fail_url'] = url('/') . '/payment/sslcommerz/failed?payment_id=' . $data['id'];
+        $post_data['cancel_url'] = url('/') . '/payment/sslcommerz/canceled?payment_id=' . $data['id'];
 
         # CUSTOMER INFORMATION
         $post_data['cus_name'] = $customer->first_name . ' ' . $customer->last_name;
@@ -179,7 +179,7 @@ class SslCommerzPaymentController extends Controller
     public function success(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
         if ($request['status'] == 'VALID' && $this->SSLCOMMERZ_hash_verify($this->store_password, $request)) {
-            $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
+            $data = $this->payment::where(['id' => $request['payment_id']])->first();
             if (isset($data) && function_exists($data->hook)) {
                 call_user_func($data->hook, [
                     'payment_method' => 'ssl_commerz',
@@ -187,7 +187,7 @@ class SslCommerzPaymentController extends Controller
                     'payment_id' => $request->input('payment_id'),
                 ]);
 
-                $this->payment::where(['uuid' => $request['payment_id']])->update([
+                $this->payment::where(['id' => $request['payment_id']])->update([
                     'payment_method' => 'ssl_commerz',
                     'is_paid' => 1,
                     'transaction_id' => $request->input('tran_id')
@@ -203,7 +203,7 @@ class SslCommerzPaymentController extends Controller
 
     public function failed(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
-        $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
+        $data = $this->payment::where(['id' => $request['payment_id']])->first();
         if ($data['callback'] != null) {
             return redirect($data['callback'] . '?payment_status=failed');
         }
@@ -213,7 +213,7 @@ class SslCommerzPaymentController extends Controller
 
     public function canceled(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
-        $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
+        $data = $this->payment::where(['id' => $request['payment_id']])->first();
         if ($data['callback'] != null) {
             return redirect($data['callback'] . '?payment_status=canceled');
         }
