@@ -4,7 +4,10 @@ namespace Mdalimrun\CombinedPaymentLibrary;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\ServiceProvider;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\PaytmController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\RazorPayController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\SslCommerzPaymentController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\StripePaymentController;
 use Mdalimrun\CombinedPaymentLibrary\Models\Payment;
 
 class PaymentServiceProvider extends ServiceProvider
@@ -33,6 +36,9 @@ class PaymentServiceProvider extends ServiceProvider
     {
         // Controllers
         $this->app->make(SslCommerzPaymentController::class);
+        $this->app->make(RazorPayController::class);
+        $this->app->make(StripePaymentController::class);
+        $this->app->make(PaytmController::class);
 
         // Models
         $this->app->make(Payment::class);
