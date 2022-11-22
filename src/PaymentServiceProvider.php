@@ -19,7 +19,7 @@ class PaymentServiceProvider extends ServiceProvider
         include __DIR__ . '/routes.php';
         // To publish views & migrations
         $this->publishes([
-            __DIR__ . '/views' => base_path('resources/views/combined-payment-views'),
+            __DIR__ . '/views' => base_path('resources/views/payments'),
             __DIR__ . '/migrations' => base_path('database/migrations'),
         ]);
     }
@@ -38,7 +38,7 @@ class PaymentServiceProvider extends ServiceProvider
         $this->app->make(Payment::class);
 
         // Views
-        $this->loadViewsFrom(__DIR__ . '/views', 'payment');
+        $this->loadViewsFrom(__DIR__ . '/views', 'payments');
     }
 }
 
