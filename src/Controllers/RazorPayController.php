@@ -27,9 +27,9 @@ class RazorPayController extends Controller
     {
         $config = $this->payment_config('razor_pay', 'payment_config');
         if (!is_null($config) && $config->mode == 'live') {
-            $razor = $config->live_values;
+            $razor = json_decode($config->live_values);
         } elseif (!is_null($config) && $config->mode == 'test') {
-            $razor = $config->test_values;
+            $razor = json_decode($config->test_values);
         }
 
         if ($razor) {
