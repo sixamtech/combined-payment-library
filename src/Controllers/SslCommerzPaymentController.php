@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Mdalimrun\CombinedPaymentLibrary\Models\Payment;
 use Mdalimrun\CombinedPaymentLibrary\Traits\Processor;
@@ -22,7 +21,7 @@ class SslCommerzPaymentController extends Controller
     private $store_password;
     private bool $host;
     private string $direct_api_url;
-    private $payment;
+    private Payment $payment;
 
     public function __construct(Payment $payment)
     {
@@ -57,8 +56,13 @@ class SslCommerzPaymentController extends Controller
             return response()->json($this->response_formatter(DEFAULT_400, null, $this->error_processor($validator)), 400);
         }
 
-        $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
+        $data = $this->payment::where(['uuid' => $request['payment_id'], 'is_paid' => 0])->first();
         $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
+
+        if (!isset($data) || !isset($customer)) {
+            return response()->json($this->response_formatter(DEFAULT_204), 200);
+        }
+
         $payment_amount = $data['payment_amount'];
 
         $post_data = array();
@@ -115,9 +119,7 @@ class SslCommerzPaymentController extends Controller
         curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, $this->host); # KEEP IT FALSE IF YOU RUN FROM LOCAL PC
 
         $content = curl_exec($handle);
-
         $code = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-
         if ($code == 200 && !(curl_errno($handle))) {
             curl_close($handle);
             $sslcommerzResponse = $content;
@@ -178,24 +180,25 @@ class SslCommerzPaymentController extends Controller
     public function success(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
         if ($request['status'] == 'VALID' && $this->SSLCOMMERZ_hash_verify($this->store_password, $request)) {
-
             $data = $this->payment::where(['uuid' => $request['payment_id']])->first();
-
-            if (function_exists($data->hook)) {
-                $data->hook([
+            if (isset($data) && function_exists($data->hook)) {
+                call_user_func($data->hook, [
                     'payment_method' => 'ssl_commerz',
                     'transaction_id' => $request->input('tran_id'),
                     'payment_id' => $request->input('payment_id'),
                 ]);
-            }
 
+                $this->payment::where(['uuid' => $request['payment_id']])->update([
+                    'payment_method' => 'ssl_commerz',
+                    'is_paid' => 1,
+                    'transaction_id' => $request->input('tran_id')
+                ]);
+            }
             if ($data['callback'] != null) {
                 return redirect($data['callback'] . '?payment_status=success');
             }
-
             return response()->json($this->response_formatter(DEFAULT_200), 200);
         }
-
         return response()->json($this->response_formatter(DEFAULT_404), 200);
     }
 
