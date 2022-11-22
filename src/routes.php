@@ -17,8 +17,8 @@ Route::group(['prefix' => 'payment'], function () {
     //STRIPE
     Route::group(['prefix' => 'stripe', 'as' => 'stripe.'], function () {
         Route::get('pay', [StripePaymentController::class, 'index']);
-        Route::get('pay', [StripePaymentController::class, 'payment_process_3d'])->name('token');
-        Route::get('pay', [StripePaymentController::class, 'success'])->name('success');
+        Route::get('token', [StripePaymentController::class, 'payment_process_3d'])->name('token');
+        Route::get('success', [StripePaymentController::class, 'success'])->name('success');
     });
 
     //RAZOR-PAY

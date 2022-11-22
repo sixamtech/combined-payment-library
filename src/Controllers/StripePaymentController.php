@@ -18,36 +18,21 @@ class StripePaymentController extends Controller
 {
     use Processor;
 
-    private $store_id;
-    private $store_password;
-    private bool $host;
-    private string $direct_api_url;
+    private $config_values;
     private Payment $payment;
 
     public function __construct(Payment $payment)
     {
-        $config = $this->payment_config('sslcommerz', 'payment_config');
+        $config = $this->payment_config('stripe', 'payment_config');
         if (!is_null($config) && $config->mode == 'live') {
-            $values = json_decode($config->live_values);
+            $this->config_values = json_decode($config->live_values);
         } elseif (!is_null($config) && $config->mode == 'test') {
-            $values = json_decode($config->test_values);
+            $this->config_values = json_decode($config->test_values);
         }
-        $this->store_id = $values->store_id;
-        $this->store_password = $values->store_password;
-
-        # REQUEST SEND TO SSLCOMMERZ
-        if ($config->mode == 'live') {
-            $this->direct_api_url = "https://securepay.sslcommerz.com/gwprocess/v4/api.php";
-            $this->host = false;
-        } else {
-            $this->direct_api_url = "https://sandbox.sslcommerz.com/gwprocess/v4/api.php";
-            $this->host = true;
-        }
-
         $this->payment = $payment;
     }
 
-    public function index(Request $request): View|Factory|JsonResponse|Application
+    public function index(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'payment_id' => 'required|uuid'
@@ -63,9 +48,9 @@ class StripePaymentController extends Controller
         }
 
         $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
-        $config = $this->payment_config('stripe', 'payment_config');
+        $config = $this->config_values;
 
-        return view('stripe', compact('customer', 'data', 'config'));
+        return view('payments.stripe', compact('customer', 'data', 'config'));
     }
 
 
@@ -125,15 +110,15 @@ class StripePaymentController extends Controller
     {
         $tran_id = Str::random(6) . '-' . rand(1, 1000);;
         $request['payment_method'] = 'stripe';
-        $response = place_booking_request($request['access_token'], $request, $tran_id);
+        //  $response = place_booking_request($request['access_token'], $request, $tran_id);
 
-        if ($response['flag'] == 'success') {
+        /*if ($response['flag'] == 'success') {
             if ($request->has('callback')) {
                 return redirect($request['callback'] . '?payment_status=success');
             } else {
                 return response()->json($this->response_formatter(DEFAULT_200), 200);
             }
-        }
+        }*/
         return response()->json($this->response_formatter(DEFAULT_204), 200);
     }
 }

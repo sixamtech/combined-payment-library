@@ -12,7 +12,7 @@
 
     <script type="text/javascript">
         // Create an instance of the Stripe object with your publishable API key
-        var stripe = Stripe('{{$config->live_values['published_key']}}');
+        var stripe = Stripe('{{$config->live_values->published_key}}');
         document.addEventListener("DOMContentLoaded", function () {
             fetch("{{ route('stripe.token',['payment_id'=>$data->id]) }}", {
                 method: "GET",
