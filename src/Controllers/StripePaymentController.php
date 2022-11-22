@@ -66,11 +66,11 @@ class StripePaymentController extends Controller
 
         if ($data['additional_data'] != null) {
             $business = json_decode($data['additional_data']);
-            $business_name = $business->business_name ?? "";
-            $business_logo = $business->business_logo ?? "";
+            $business_name = $business->business_name ?? "my_business";
+            $business_logo = $business->business_logo ??  url('/');
         } else {
-            $business_name = "";
-            $business_logo = "";
+            $business_name = "my_business";
+            $business_logo = url('/');
         }
 
         $checkout_session = \Stripe\Checkout\Session::create([
