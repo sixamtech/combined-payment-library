@@ -22,5 +22,7 @@
         }
     },
     "minimum-stability": "dev",
-    "require": {}
+    "require": {
+        "doctrine/dbal": "3.5.x-dev"
+    }
 }
