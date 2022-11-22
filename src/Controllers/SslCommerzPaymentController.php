@@ -56,7 +56,7 @@ class SslCommerzPaymentController extends Controller
             return response()->json($this->response_formatter(DEFAULT_400, null, $this->error_processor($validator)), 400);
         }
 
-        $data = $this->payment::where(['uuid' => $request['payment_id'], 'is_paid' => 0])->first();
+        $data = $this->payment::where(['id' => $request['payment_id']])->where(['is_paid' => 0])->first();
         $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
 
         if (!isset($data) || !isset($customer)) {
