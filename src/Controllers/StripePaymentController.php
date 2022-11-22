@@ -102,14 +102,14 @@ class StripePaymentController extends Controller
             if (isset($data) && function_exists($data->hook)) {
                 call_user_func($data->hook, [
                     'payment_method' => 'stripe',
-                    'transaction_id' => $request->input('tran_id'),
+                    'transaction_id' => $session->payment_intent,
                     'payment_id' => $request->input('payment_id'),
                 ]);
 
                 $this->payment::where(['id' => $request['payment_id']])->update([
-                    'payment_method' => 'ssl_commerz',
+                    'payment_method' => 'stripe',
                     'is_paid' => 1,
-                    'transaction_id' => $request->input('tran_id')
+                    'transaction_id' => $session->payment_intent,
                 ]);
             }
             if ($data['callback'] != null) {
