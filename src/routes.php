@@ -39,7 +39,6 @@ Route::group(['prefix' => 'payment'], function () {
     //SENANG-PAY
     Route::group(['prefix' => 'senang-pay', 'as' => 'senang-pay.'], function () {
         Route::get('pay', 'SenangPayController@index');
-        //
     });
 
     //PAYTM
