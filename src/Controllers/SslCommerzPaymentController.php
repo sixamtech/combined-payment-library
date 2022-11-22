@@ -57,11 +57,10 @@ class SslCommerzPaymentController extends Controller
         }
 
         $data = $this->payment::where(['id' => $request['payment_id']])->where(['is_paid' => 0])->first();
-        $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
-
-        if (!isset($data) || !isset($customer)) {
+        if (!isset($data)) {
             return response()->json($this->response_formatter(DEFAULT_204), 200);
         }
+        $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
 
         $payment_amount = $data['payment_amount'];
 
