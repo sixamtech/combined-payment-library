@@ -15,14 +15,14 @@
                 data-key="{{ config()->get('razor_config.api_key') }}"
                 data-amount="{{round($data->payment_amount, 2)*100}}"
                 data-buttontext="Pay {{ round($data->payment_amount, 2) . ' ' . $data->currency_code }}"
-                data-name="lorem"
+                data-name="{{$business_name}}"
                 data-description="{{$data->payment_amount}}"
-                data-image="def.png"
+                data-image="{{$business_logo}}"
                 data-prefill.name="{{$customer->first_name ?? ''}}"
                 data-prefill.email="{{$customer->email ?? ''}}"
                 data-theme.color="#ff7529">
         </script>
-        <button class="btn btn-block" id="pay-button" type="submit" style="display:none"></button>
+        <button class="btn" id="pay-button" type="submit" style="display:none"></button>
     </form>
 
     <script type="text/javascript">

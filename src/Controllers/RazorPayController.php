@@ -59,7 +59,16 @@ class RazorPayController extends Controller
         }
         $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
 
-        return view('payments.razor-pay', compact('data', 'customer'));
+        if ($data['additional_data'] != null) {
+            $business = json_decode($data['additional_data']);
+            $business_name = $business->business_name ?? "my_business";
+            $business_logo = $business->business_logo ??  url('/');
+        } else {
+            $business_name = "my_business";
+            $business_logo = url('/');
+        }
+
+        return view('payments.razor-pay', compact('data', 'customer','business_logo','business_name'));
     }
 
     public function payment(Request $request): JsonResponse|Redirector|RedirectResponse|Application
