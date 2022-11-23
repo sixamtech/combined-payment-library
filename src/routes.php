@@ -64,4 +64,18 @@ Route::group(['prefix' => 'payment'], function () {
         Route::get('callback', [PaystackController::class, 'handleGatewayCallback'])->name('callback');
     });
 
+    //BKASH
+    Route::group(['prefix' => 'bkash', 'as' => 'bkash.'], function () {
+        // Payment Routes for bKash
+        Route::post('get-token', 'BkashController@getToken')->name('bkash-get-token');
+        Route::post('create-payment', 'BkashController@createPayment')->name('bkash-create-payment');
+        Route::post('execute-payment', 'BkashController@executePayment')->name('bkash-execute-payment');
+        Route::get('query-payment', 'BkashController@queryPayment')->name('bkash-query-payment');
+        Route::post('success', 'BkashController@bkashSuccess')->name('bkash-success');
+
+        // Refund Routes for bKash
+        Route::get('refund', 'BkashRefundController@index')->name('bkash-refund');
+        Route::post('refund', 'BkashRefundController@refund')->name('bkash-refund');
+    });
+
 });
