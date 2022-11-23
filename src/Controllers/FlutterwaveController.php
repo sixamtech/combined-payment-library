@@ -2,6 +2,8 @@
 
 namespace Mdalimrun\CombinedPaymentLibrary\Controllers;
 
+use Flutterwave\Flutterwave;
+use Flutterwave\Util\Currency;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -11,7 +13,6 @@ use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use KingFlamez\Rave\Facades\Rave as Flutterwave;
 use Mdalimrun\CombinedPaymentLibrary\Models\Payment;
 use Mdalimrun\CombinedPaymentLibrary\Traits\Processor;
 
@@ -36,7 +37,7 @@ class FlutterwaveController extends Controller
             $config = array(
                 'publicKey' => env('FLW_PUBLIC_KEY', $this->config_values->public_key),
                 'secretKey' => env('FLW_SECRET_KEY', $this->config_values->secret_key),
-                'secretHash' => env('FLW_SECRET_HASH', $this->config_values->hash),
+                'encryptionKey' => env('FLW_ENCRYPTION_KEY', $this->config_values->encryptionKey),
             );
             Config::set('flutterwave', $config);
         }
@@ -46,6 +47,7 @@ class FlutterwaveController extends Controller
 
     public function initialize(Request $request): JsonResponse|Redirector|RedirectResponse|Application
     {
+
         $validator = Validator::make($request->all(), [
             'payment_id' => 'required|uuid'
         ]);
@@ -60,7 +62,39 @@ class FlutterwaveController extends Controller
         }
 
         $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
-        $reference = Flutterwave::generateReference();
+
+        $data = [
+            "amount" => 2000,
+            "currency" => Currency::NGN,
+            "tx_ref" => "TEST-" . uniqid() . time(),
+            "redirectUrl" => "https://www.example.com",
+            "additionalData" => [
+                "subaccounts" => [],
+                "meta" => [
+                    "unique_id" => uniqid() . uniqid()
+                ],
+                "preauthorize" => false,
+                "payment_plan" => null,
+                "card_details" => [
+                    "card_number" => "5531886652142950",
+                    "cvv" => "564",
+                    "expiry_month" => "09",
+                    "expiry_year" => "32"
+                ]
+            ],
+        ];
+
+        $cardpayment = Flutterwave::create("card");
+        $customerObj = $cardpayment->customer->create([
+            "full_name" => $customer['first_name'] . ' ' . $customer['last_name'],
+            "email" => $customer['email'],
+            "phone" => $customer['phone'],
+        ]);
+        $data['customer'] = $customerObj;
+        $payload = $cardpayment->payload->create($data);
+        $result = $cardpayment->initiate($payload);
+
+        dd($result);
 
         if ($data['additional_data'] != null) {
             $business = json_decode($data['additional_data']);
