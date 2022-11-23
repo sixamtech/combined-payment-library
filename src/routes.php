@@ -1,10 +1,10 @@
 <?php
 
-use App\Http\Controllers\MercadoPagoController;
 use Illuminate\Support\Facades\Route;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\BkashPaymentController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\FlutterwaveController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\LiqPayController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\MercadoPagoController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaystackController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaytmController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\RazorPayController;

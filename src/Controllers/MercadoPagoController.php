@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Mdalimrun\CombinedPaymentLibrary\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
 use Mdalimrun\CombinedPaymentLibrary\Models\Payment as PaymentTable;
 use Mdalimrun\CombinedPaymentLibrary\Traits\Processor;
