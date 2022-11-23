@@ -17,7 +17,7 @@
                        value="{{$customer->email!=null?$customer->email:'required@email.com'}}"> {{-- required --}}
                 <input type="hidden" name="orderID" value="{{$data->id}}">
                 <input type="hidden" name="amount"
-                       value="{{$order_amount*100}}"> {{-- required in kobo --}}
+                       value="{{$data->payment_amount*100}}"> {{-- required in kobo --}}
                 <input type="hidden" name="quantity" value="1">
                 <input type="hidden" name="currency"
                        value="{{$data->currency_code}}">

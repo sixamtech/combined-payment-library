@@ -16,30 +16,27 @@ class PaystackController extends Controller
     use Processor;
 
     private Payment $payment;
-    private $paystack;
 
     public function __construct(Payment $payment)
     {
         $config = $this->payment_config('paystack', 'payment_config');
         if (!is_null($config) && $config->mode == 'live') {
-            $values = $config->live_values;
+            $values = json_decode($config->live_values);
         } elseif (!is_null($config) && $config->mode == 'test') {
-            $values = $config->test_values;
+            $values = json_decode($config->test_values);
         }
 
         if ($values) {
             $config = array(
-                'publicKey' => env('PAYSTACK_PUBLIC_KEY', $values['public_key']),
-                'secretKey' => env('PAYSTACK_SECRET_KEY', $values['secret_key']),
-                'paymentUrl' => env('PAYSTACK_PAYMENT_URL', $values['callback_url']),
-                'merchantEmail' => env('MERCHANT_EMAIL', $values['merchant_email']),
+                'publicKey' => env('PAYSTACK_PUBLIC_KEY', $values->public_key),
+                'secretKey' => env('PAYSTACK_SECRET_KEY', $values->secret_key),
+                'paymentUrl' => env('PAYSTACK_PAYMENT_URL', $values->callback_url),
+                'merchantEmail' => env('MERCHANT_EMAIL', $values->merchant_email),
             );
             Config::set('paystack', $config);
         }
 
         $this->payment = $payment;
-
-        $this->paystack = Paystack::genTranxRef();
     }
 
     public function index(Request $request)
@@ -58,8 +55,7 @@ class PaystackController extends Controller
         }
         $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
 
-        $paystack = $this->paystack;
-        $reference = $paystack::generate_transaction_Referance();
+        $reference = Paystack::genTranxRef();
 
         return view('payments.paystack', compact('data', 'customer', 'reference'));
     }
@@ -72,21 +68,19 @@ class PaystackController extends Controller
     public function handleGatewayCallback(Request $request)
     {
         $paymentDetails = Paystack::getPaymentData();
-        $transaction_reference = $paymentDetails['data']['reference'];
-
         if ($paymentDetails['status'] == true) {
             $data = $this->payment::where(['id' => $paymentDetails['data']['orderID']])->first();
             if (isset($data) && function_exists($data->hook)) {
                 call_user_func($data->hook, [
                     'payment_method' => 'paystack',
-                    'transaction_id' => $transaction_reference,
-                    'payment_id' => $request->input('payment_id'),
+                    'transaction_id' => $request['trxref'],
+                    'payment_id' => $paymentDetails['data']['orderID'],
                 ]);
 
-                $this->payment::where(['id' => $request['payment_id']])->update([
+                $this->payment::where(['id' => $paymentDetails['data']['orderID']])->update([
                     'payment_method' => 'paystack',
                     'is_paid' => 1,
-                    'transaction_id' => $paymentDetails['data']['orderID'],
+                    'transaction_id' => $request['trxref'],
                 ]);
             }
             if ($data['callback'] != null) {
