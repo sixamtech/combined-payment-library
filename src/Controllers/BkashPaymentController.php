@@ -6,8 +6,10 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Mdalimrun\CombinedPaymentLibrary\Models\Payment;
@@ -63,13 +65,13 @@ class BkashPaymentController extends Controller
         if ($data['additional_data'] != null) {
             $business = json_decode($data['additional_data']);
             $business_name = $business->business_name ?? "my_business";
-            $business_logo = $business->business_logo ??  url('/');
+            $business_logo = $business->business_logo ?? url('/');
         } else {
             $business_name = "my_business";
             $business_logo = url('/');
         }
 
-        return view('payments.bkash', compact('data', 'customer','business_logo','business_name'));
+        return view('payments.bkash', compact('data', 'customer', 'business_logo', 'business_name'));
     }
 
     public function getToken()
@@ -179,29 +181,31 @@ class BkashPaymentController extends Controller
 
     public function bkashSuccess(Request $request)
     {
-        // IF PAYMENT SUCCESS THEN YOU CAN APPLY YOUR CONDITION HERE
-        if ('Noman' == 'success') {
+        if ($request['transactionStatus'] == 'Completed') {
             $data = $this->payment::where(['id' => $request['payment_id']])->first();
             if (isset($data) && function_exists($data->hook)) {
                 call_user_func($data->hook, [
-                    'payment_method' => 'razor_pay',
-                    'transaction_id' => $input['razorpay_payment_id'],
+                    'payment_method' => 'bkash',
+                    'transaction_id' => $request['trxID'],
                     'payment_id' => $request->input('payment_id'),
                 ]);
-
                 $this->payment::where(['id' => $request['payment_id']])->update([
-                    'payment_method' => 'razor_pay',
+                    'payment_method' => 'bkash',
                     'is_paid' => 1,
-                    'transaction_id' => $input['razorpay_payment_id'],
+                    'transaction_id' => $request['trxID'],
                 ]);
             }
-            if ($data['callback'] != null) {
-                return redirect($data['callback'] . '?payment_status=success');
-            }
-            return response()->json($this->response_formatter(DEFAULT_200), 200);
         }
-        return response()->json(['status' => false]);
+        return response()->json(['status' => true]);
+    }
 
+    public function callback(Request $request): JsonResponse|Redirector|RedirectResponse|Application
+    {
+        $data = $this->payment::where(['id' => $request['payment_id']])->first();
+        if ($data['callback'] != null) {
+            return redirect($data['callback'] . '?payment_status=success');
+        }
+        return response()->json($this->response_formatter(DEFAULT_200), 200);
     }
 }
 

@@ -112,7 +112,7 @@
             $.post('{{ route('bkash-success',['payment_id'=>$data->id]) }}', {
                 payment_info: data
             }, function (res) {
-                location.href = '{{ route('payment-success')}}';
+                location.href = '{{ route('payment-callback',['payment_id'=>$data->id])}}';
             });
         }
 

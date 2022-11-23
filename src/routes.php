@@ -72,6 +72,7 @@ Route::group(['prefix' => 'payment'], function () {
         Route::post('execute-payment', 'BkashController@executePayment')->name('bkash-execute-payment');
         Route::get('query-payment', 'BkashController@queryPayment')->name('bkash-query-payment');
         Route::post('success', 'BkashController@bkashSuccess')->name('bkash-success');
+        Route::get('callback', 'BkashController@callback')->name('bkash-callback');
 
         // Refund Routes for bKash
         Route::get('refund', 'BkashRefundController@index')->name('bkash-refund');
