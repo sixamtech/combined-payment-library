@@ -27,6 +27,7 @@
         "stripe/stripe-php": "^10.0",
         "razorpay/razorpay": "dev-master",
         "unicodeveloper/laravel-paystack": "dev-master",
-        "kingflamez/laravelrave": "*"
+        "kingflamez/laravelrave": "*",
+        "mercadopago/dx-php": "dev-master"
     }
 }

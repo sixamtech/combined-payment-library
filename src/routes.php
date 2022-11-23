@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MercadoPagoController;
 use Illuminate\Support\Facades\Route;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\BkashPaymentController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\FlutterwaveController;
@@ -67,7 +68,7 @@ Route::group(['prefix' => 'payment'], function () {
     });
 
     //BKASH
-    Route::group(['prefix' => 'bkash', 'as' => 'bkash.'], function () {
+    Route::group(['prefix' => 'bkash'], function () {
         // Payment Routes for bKash
         Route::post('get-token', [BkashPaymentController::class,'getToken'])->name('bkash-get-token');
         Route::post('create-payment', [BkashPaymentController::class,'createPayment'])->name('bkash-create-payment');
@@ -81,5 +82,11 @@ Route::group(['prefix' => 'payment'], function () {
     Route::group(['prefix' => 'liqpay', 'as' => 'liqpay.'], function () {
         Route::get('payment', [LiqPayController::class,'payment'])->name('payment');
         Route::any('callback', [LiqPayController::class,'callback'])->name('callback');
+    });
+
+    //MERCADOPAGO
+    Route::group(['prefix' => 'mercadopago', 'as' => 'mercadopago.'], function () {
+        Route::get('pay', [MercadoPagoController::class,'index'])->name('index');
+        Route::post('make-payment', [MercadoPagoController::class,'make_payment'])->name('make_payment');
     });
 });

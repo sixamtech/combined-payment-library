@@ -2,6 +2,7 @@
 
 namespace Mdalimrun\CombinedPaymentLibrary;
 
+use App\Http\Controllers\MercadoPagoController;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\ServiceProvider;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\BkashPaymentController;
@@ -49,6 +50,7 @@ class PaymentServiceProvider extends ServiceProvider
         $this->app->make(FlutterwaveController::class);
         $this->app->make(BkashPaymentController::class);
         $this->app->make(LiqPayController::class);
+        $this->app->make(MercadoPagoController::class);
 
         // Models
         $this->app->make(Payment::class);
