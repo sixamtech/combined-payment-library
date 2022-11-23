@@ -26,6 +26,7 @@
         "doctrine/dbal": "3.5.x-dev",
         "stripe/stripe-php": "^10.0",
         "razorpay/razorpay": "dev-master",
-        "unicodeveloper/laravel-paystack": "dev-master"
+        "unicodeveloper/laravel-paystack": "dev-master",
+        "kingflamez/laravelrave": "*"
     }
 }

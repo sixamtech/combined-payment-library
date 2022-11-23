@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\FlutterwaveController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaystackController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaytmController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\RazorPayController;
@@ -52,8 +53,8 @@ Route::group(['prefix' => 'payment'], function () {
 
     //FLUTTERWAVE
     Route::group(['prefix' => 'flutterwave', 'as' => 'flutterwave.'], function () {
-        Route::get('pay', 'FlutterwaveController@initialize')->name('pay');
-        Route::get('callback', 'FlutterwaveController@callback')->name('callback')->WithoutMiddleware('detectUser');
+        Route::get('pay', [FlutterwaveController::class,'initialize'])->name('pay');
+        Route::get('callback', [FlutterwaveController::class,'callback'])->name('callback');
     });
 
     //PAYSTACK

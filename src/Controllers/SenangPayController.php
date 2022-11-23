@@ -50,7 +50,6 @@ class SenangPayController extends Controller
         }
         $customer = DB::table('users')->where(['id' => $data['customer_id']])->first();
         $config = $this->config_values;
-
         session()->put('payment_id', $data->id);
         return view('payments.senang-pay', compact('data', 'customer', 'config'));
     }
