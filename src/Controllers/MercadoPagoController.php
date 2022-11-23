@@ -22,12 +22,10 @@ class MercadoPagoController extends Controller
     {
         $config = $this->payment_config('mercadopago', 'payment_config');
         if (!is_null($config) && $config->mode == 'live') {
-            $values = json_decode($config->live_values);
+            $this->config = json_decode($config->live_values);
         } elseif (!is_null($config) && $config->mode == 'test') {
-            $values = json_decode($config->test_values);
+            $this->config = json_decode($config->test_values);
         }
-
-        $this->config = $values;
         $this->payment = $payment;
     }
 
