@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\BkashPaymentController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\FlutterwaveController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\LiqPayController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaystackController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaytmController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\RazorPayController;
@@ -76,4 +77,9 @@ Route::group(['prefix' => 'payment'], function () {
         Route::get('callback', [BkashPaymentController::class,'callback'])->name('bkash-callback');
     });
 
+    //PAYSTACK
+    Route::group(['prefix' => 'liqpay', 'as' => 'liqpay.'], function () {
+        Route::get('payment', [LiqPayController::class,'payment'])->name('payment');
+        Route::any('callback', [LiqPayController::class,'callback'])->name('callback');
+    });
 });
