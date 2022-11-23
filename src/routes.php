@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\BkashPaymentController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\FlutterwaveController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaystackController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaytmController;
@@ -67,16 +68,12 @@ Route::group(['prefix' => 'payment'], function () {
     //BKASH
     Route::group(['prefix' => 'bkash', 'as' => 'bkash.'], function () {
         // Payment Routes for bKash
-        Route::post('get-token', 'BkashController@getToken')->name('bkash-get-token');
-        Route::post('create-payment', 'BkashController@createPayment')->name('bkash-create-payment');
-        Route::post('execute-payment', 'BkashController@executePayment')->name('bkash-execute-payment');
-        Route::get('query-payment', 'BkashController@queryPayment')->name('bkash-query-payment');
-        Route::post('success', 'BkashController@bkashSuccess')->name('bkash-success');
-        Route::get('callback', 'BkashController@callback')->name('bkash-callback');
-
-        // Refund Routes for bKash
-        Route::get('refund', 'BkashRefundController@index')->name('bkash-refund');
-        Route::post('refund', 'BkashRefundController@refund')->name('bkash-refund');
+        Route::post('get-token', [BkashPaymentController::class,'getToken'])->name('bkash-get-token');
+        Route::post('create-payment', [BkashPaymentController::class,'createPayment'])->name('bkash-create-payment');
+        Route::post('execute-payment', [BkashPaymentController::class,'executePayment'])->name('bkash-execute-payment');
+        Route::get('query-payment',  [BkashPaymentController::class,'queryPayment'])->name('bkash-query-payment');
+        Route::post('success',  [BkashPaymentController::class,'bkashSuccess'])->name('bkash-success');
+        Route::get('callback', [BkashPaymentController::class,'callback'])->name('bkash-callback');
     });
 
 });
