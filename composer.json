@@ -28,6 +28,6 @@
         "razorpay/razorpay": "dev-master",
         "unicodeveloper/laravel-paystack": "dev-master",
         "mercadopago/dx-php": "dev-master",
-        "kingflamez/laravelrave": "dev-master"
+        "flutterwavedev/flutterwave-v3": "dev-master"
     }
 }

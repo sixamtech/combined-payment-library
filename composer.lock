@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e69d49cbd06d12a6ad4941f29afb7c5",
+    "content-hash": "1945dc0a1260b1ce7018b9a49a96d62f",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -782,6 +782,130 @@
             "time": "2022-11-18T14:10:19+00:00"
         },
         {
+            "name": "flutterwavedev/flutterwave-v3",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Flutterwave/PHP.git",
+                "reference": "e8dfd50fa8c697d475b134aea101f2682519bb3b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Flutterwave/PHP/zipball/e8dfd50fa8c697d475b134aea101f2682519bb3b",
+                "reference": "e8dfd50fa8c697d475b134aea101f2682519bb3b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.5",
+                "monolog/monolog": "^2.0 || ^3.0",
+                "php": "^7.4 || ^8.0 || ^8.1",
+                "psr/http-client": "^1.0",
+                "vlucas/phpdotenv": "^2.5 || ^3.0 || ^5.0"
+            },
+            "require-dev": {
+                "mockery/mockery": ">=1.2",
+                "nunomaduro/phpinsights": "^2.6",
+                "pestphp/pest": "^1.22",
+                "phpstan/phpstan": "^1.9",
+                "phpunit/phpunit": ">=6.0",
+                "symfony/var-dumper": "5.4.13"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Flutterwave\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Flutterwave Developers",
+                    "email": "developers@flutterwavego.com"
+                }
+            ],
+            "description": "A simple SDK for integrating to Flutterwave Payment",
+            "homepage": "https://github.com/Flutterwave/Flutterwave-PHP-v3",
+            "keywords": [
+                "africa",
+                "flutterwave",
+                "payment",
+                "transfers"
+            ],
+            "support": {
+                "issues": "https://github.com/Flutterwave/PHP/issues",
+                "source": "https://github.com/Flutterwave/PHP/tree/1.0.4"
+            },
+            "time": "2022-11-22T14:04:46+00:00"
+        },
+        {
+            "name": "graham-campbell/result-type",
+            "version": "1.1.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/GrahamCampbell/Result-Type.git",
+                "reference": "821e73872c8eec935700049e46e009382a2efaaf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/GrahamCampbell/Result-Type/zipball/821e73872c8eec935700049e46e009382a2efaaf",
+                "reference": "821e73872c8eec935700049e46e009382a2efaaf",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2.5 || ^8.0",
+                "phpoption/phpoption": "^1.9"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.5.30 || ^9.5.25"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "GrahamCampbell\\ResultType\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Graham Campbell",
+                    "email": "hello@gjcampbell.co.uk",
+                    "homepage": "https://github.com/GrahamCampbell"
+                }
+            ],
+            "description": "An Implementation Of The Result Type",
+            "keywords": [
+                "Graham Campbell",
+                "GrahamCampbell",
+                "Result Type",
+                "Result-Type",
+                "result"
+            ],
+            "support": {
+                "issues": "https://github.com/GrahamCampbell/Result-Type/issues",
+                "source": "https://github.com/GrahamCampbell/Result-Type/tree/1.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/GrahamCampbell",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/graham-campbell/result-type",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-10-15T20:51:53+00:00"
+        },
+        {
             "name": "guzzlehttp/guzzle",
             "version": "dev-master",
             "source": {
@@ -1332,81 +1456,6 @@
             "time": "2022-09-21T21:30:03+00:00"
         },
         {
-            "name": "kingflamez/laravelrave",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/kingflamez/laravelrave.git",
-                "reference": "1f26169cd1cc7d17d74b84c402eb999b59bfc696"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/kingflamez/laravelrave/zipball/1f26169cd1cc7d17d74b84c402eb999b59bfc696",
-                "reference": "1f26169cd1cc7d17d74b84c402eb999b59bfc696",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/support": "^5.0|^6.0|^7.0|^8.0",
-                "php": "^7.2|^8.0"
-            },
-            "require-dev": {
-                "mockery/mockery": "^1.2",
-                "orchestra/testbench": "^4.0",
-                "phpunit/phpunit": "^8.3",
-                "satooshi/php-coveralls": ">0.7",
-                "scrutinizer/ocular": "^1.1"
-            },
-            "default-branch": true,
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "KingFlamez\\Rave\\RaveServiceProvider"
-                    ],
-                    "aliases": {
-                        "Rave": "KingFlamez\\Rave\\Facades\\Rave"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "KingFlamez\\Rave\\": "src/"
-                },
-                "classmap": [
-                    "src/Rave.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "kingflamez",
-                    "email": "flamekeed@gmail.com"
-                }
-            ],
-            "description": "A Laravel 5 Package for Flutterwave Rave",
-            "keywords": [
-                "Flutterwave Rave",
-                "flutterwave",
-                "github",
-                "kingflamez",
-                "laravel",
-                "laravel 5",
-                "open source",
-                "payments",
-                "php",
-                "rave",
-                "ravepay.co"
-            ],
-            "support": {
-                "issues": "https://github.com/kingflamez/laravelrave/issues",
-                "source": "https://github.com/kingflamez/laravelrave/tree/master"
-            },
-            "time": "2022-05-27T10:56:38+00:00"
-        },
-        {
             "name": "mercadopago/dx-php",
             "version": "dev-master",
             "source": {
@@ -1457,6 +1506,108 @@
                 "source": "https://github.com/mercadopago/sdk-php/tree/2.5.2"
             },
             "time": "2022-11-22T15:07:07+00:00"
+        },
+        {
+            "name": "monolog/monolog",
+            "version": "2.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Seldaek/monolog.git",
+                "reference": "1387e02612584ffa1a9e93384d2d63ba0a747e11"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1387e02612584ffa1a9e93384d2d63ba0a747e11",
+                "reference": "1387e02612584ffa1a9e93384d2d63ba0a747e11",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2",
+                "psr/log": "^1.0.1 || ^2.0 || ^3.0"
+            },
+            "provide": {
+                "psr/log-implementation": "1.0.0 || 2.0.0 || 3.0.0"
+            },
+            "require-dev": {
+                "aws/aws-sdk-php": "^2.4.9 || ^3.0",
+                "doctrine/couchdb": "~1.0@dev",
+                "elasticsearch/elasticsearch": "^7 || ^8",
+                "ext-json": "*",
+                "graylog2/gelf-php": "^1.4.2 || ^2@dev",
+                "guzzlehttp/guzzle": "^7.4",
+                "guzzlehttp/psr7": "^2.2",
+                "mongodb/mongodb": "^1.8",
+                "php-amqplib/php-amqplib": "~2.4 || ^3",
+                "phpspec/prophecy": "^1.15",
+                "phpstan/phpstan": "^0.12.91",
+                "phpunit/phpunit": "^8.5.14",
+                "predis/predis": "^1.1 || ^2.0",
+                "rollbar/rollbar": "^1.3 || ^2 || ^3",
+                "ruflin/elastica": "^7",
+                "swiftmailer/swiftmailer": "^5.3|^6.0",
+                "symfony/mailer": "^5.4 || ^6",
+                "symfony/mime": "^5.4 || ^6"
+            },
+            "suggest": {
+                "aws/aws-sdk-php": "Allow sending log messages to AWS services like DynamoDB",
+                "doctrine/couchdb": "Allow sending log messages to a CouchDB server",
+                "elasticsearch/elasticsearch": "Allow sending log messages to an Elasticsearch server via official client",
+                "ext-amqp": "Allow sending log messages to an AMQP server (1.0+ required)",
+                "ext-curl": "Required to send log messages using the IFTTTHandler, the LogglyHandler, the SendGridHandler, the SlackWebhookHandler or the TelegramBotHandler",
+                "ext-mbstring": "Allow to work properly with unicode symbols",
+                "ext-mongodb": "Allow sending log messages to a MongoDB server (via driver)",
+                "ext-openssl": "Required to send log messages using SSL",
+                "ext-sockets": "Allow sending log messages to a Syslog server (via UDP driver)",
+                "graylog2/gelf-php": "Allow sending log messages to a GrayLog2 server",
+                "mongodb/mongodb": "Allow sending log messages to a MongoDB server (via library)",
+                "php-amqplib/php-amqplib": "Allow sending log messages to an AMQP server using php-amqplib",
+                "rollbar/rollbar": "Allow sending log messages to Rollbar",
+                "ruflin/elastica": "Allow sending log messages to an Elastic Search server"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Monolog\\": "src/Monolog"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be",
+                    "homepage": "https://seld.be"
+                }
+            ],
+            "description": "Sends your logs to files, sockets, inboxes, databases and various web services",
+            "homepage": "https://github.com/Seldaek/monolog",
+            "keywords": [
+                "log",
+                "logging",
+                "psr-3"
+            ],
+            "support": {
+                "issues": "https://github.com/Seldaek/monolog/issues",
+                "source": "https://github.com/Seldaek/monolog/tree/2.x"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/Seldaek",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/monolog/monolog",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-10-14T15:01:04+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -1560,6 +1711,82 @@
                 }
             ],
             "time": "2022-11-07T09:00:40+00:00"
+        },
+        {
+            "name": "phpoption/phpoption",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/schmittjoh/php-option.git",
+                "reference": "00430c0532ae544fb1c81e45705b3d356bfc25d0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/schmittjoh/php-option/zipball/00430c0532ae544fb1c81e45705b3d356bfc25d0",
+                "reference": "00430c0532ae544fb1c81e45705b3d356bfc25d0",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2.5 || ^8.0"
+            },
+            "require-dev": {
+                "bamarni/composer-bin-plugin": "^1.8.1",
+                "phpunit/phpunit": "^8.5.30 || ^9.5.25"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "bamarni-bin": {
+                    "bin-links": true,
+                    "forward-command": true
+                },
+                "branch-alias": {
+                    "dev-master": "1.9-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpOption\\": "src/PhpOption/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Johannes M. Schmitt",
+                    "email": "schmittjoh@gmail.com",
+                    "homepage": "https://github.com/schmittjoh"
+                },
+                {
+                    "name": "Graham Campbell",
+                    "email": "hello@gjcampbell.co.uk",
+                    "homepage": "https://github.com/GrahamCampbell"
+                }
+            ],
+            "description": "Option Type for PHP",
+            "keywords": [
+                "language",
+                "option",
+                "php",
+                "type"
+            ],
+            "support": {
+                "issues": "https://github.com/schmittjoh/php-option/issues",
+                "source": "https://github.com/schmittjoh/php-option/tree/master"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/GrahamCampbell",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/phpoption/phpoption",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-10-15T20:52:05+00:00"
         },
         {
             "name": "psr/cache",
@@ -2247,6 +2474,89 @@
             "time": "2022-01-02T09:55:41+00:00"
         },
         {
+            "name": "symfony/polyfill-ctype",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-ctype.git",
+                "reference": "5bbc823adecdae860bb64756d639ecfec17b050a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/5bbc823adecdae860bb64756d639ecfec17b050a",
+                "reference": "5bbc823adecdae860bb64756d639ecfec17b050a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "provide": {
+                "ext-ctype": "*"
+            },
+            "suggest": {
+                "ext-ctype": "For best performance"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.27-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Ctype\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gert de Pagter",
+                    "email": "BackEndTea@gmail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill for ctype functions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "ctype",
+                "polyfill",
+                "portable"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.27.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-11-03T14:55:06+00:00"
+        },
+        {
             "name": "symfony/polyfill-mbstring",
             "version": "dev-main",
             "source": {
@@ -2667,6 +2977,91 @@
             "time": "2022-09-21T10:25:05+00:00"
         },
         {
+            "name": "vlucas/phpdotenv",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vlucas/phpdotenv.git",
+                "reference": "1a7ea2afc49c3ee6d87061f5a233e3a035d0eae7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/1a7ea2afc49c3ee6d87061f5a233e3a035d0eae7",
+                "reference": "1a7ea2afc49c3ee6d87061f5a233e3a035d0eae7",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pcre": "*",
+                "graham-campbell/result-type": "^1.0.2",
+                "php": "^7.1.3 || ^8.0",
+                "phpoption/phpoption": "^1.8",
+                "symfony/polyfill-ctype": "^1.23",
+                "symfony/polyfill-mbstring": "^1.23.1",
+                "symfony/polyfill-php80": "^1.23.1"
+            },
+            "require-dev": {
+                "bamarni/composer-bin-plugin": "^1.4.1",
+                "ext-filter": "*",
+                "phpunit/phpunit": "^7.5.20 || ^8.5.30 || ^9.5.25"
+            },
+            "suggest": {
+                "ext-filter": "Required to use the boolean validator."
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "bamarni-bin": {
+                    "bin-links": true,
+                    "forward-command": true
+                },
+                "branch-alias": {
+                    "dev-master": "5.5-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Dotenv\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Graham Campbell",
+                    "email": "hello@gjcampbell.co.uk",
+                    "homepage": "https://github.com/GrahamCampbell"
+                },
+                {
+                    "name": "Vance Lucas",
+                    "email": "vance@vancelucas.com",
+                    "homepage": "https://github.com/vlucas"
+                }
+            ],
+            "description": "Loads environment variables from `.env` to `getenv()`, `$_ENV` and `$_SERVER` automagically.",
+            "keywords": [
+                "dotenv",
+                "env",
+                "environment"
+            ],
+            "support": {
+                "issues": "https://github.com/vlucas/phpdotenv/issues",
+                "source": "https://github.com/vlucas/phpdotenv/tree/v5.5.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/GrahamCampbell",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/vlucas/phpdotenv",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-10-16T01:01:54+00:00"
+        },
+        {
             "name": "voku/portable-ascii",
             "version": "1.6.1",
             "source": {
@@ -2749,7 +3144,7 @@
         "razorpay/razorpay": 20,
         "unicodeveloper/laravel-paystack": 20,
         "mercadopago/dx-php": 20,
-        "kingflamez/laravelrave": 20
+        "flutterwavedev/flutterwave-v3": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

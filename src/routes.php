@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\BkashPaymentController;
-use Mdalimrun\CombinedPaymentLibrary\Controllers\FlutterwaveController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\FlutterwaveV3Controller;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\LiqPayController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\MercadoPagoController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaystackController;
@@ -55,9 +55,9 @@ Route::group(['prefix' => 'payment'], function () {
     });
 
     //FLUTTERWAVE
-    Route::group(['prefix' => 'flutterwave', 'as' => 'flutterwave.'], function () {
-        Route::get('pay', [FlutterwaveController::class,'initialize'])->name('pay');
-        Route::get('callback', [FlutterwaveController::class,'callback'])->name('callback');
+    Route::group(['prefix' => 'flutterwave-v3', 'as' => 'flutterwave-v3.'], function () {
+        Route::get('pay', [FlutterwaveV3Controller::class,'initialize'])->name('pay');
+        Route::get('callback', [FlutterwaveV3Controller::class,'callback'])->name('callback');
     });
 
     //PAYSTACK
