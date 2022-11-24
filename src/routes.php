@@ -5,6 +5,7 @@ use Mdalimrun\CombinedPaymentLibrary\Controllers\BkashPaymentController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\FlutterwaveV3Controller;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\LiqPayController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\MercadoPagoController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\PaymobController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaystackController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaytmController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\RazorPayController;
@@ -89,4 +90,11 @@ Route::group(['prefix' => 'payment'], function () {
         Route::get('pay', [MercadoPagoController::class,'index'])->name('index');
         Route::post('make-payment', [MercadoPagoController::class,'make_payment'])->name('make_payment');
     });
+
+    // paymob
+    Route::group(['prefix' => 'paymob', 'as' => 'paymob.'], function () {
+        Route::any('pay', [PaymobController::class,'credit'])->name('pay');
+        Route::any('callback', [PaymobController::class,'callback'])->name('callback');
+    });
+
 });

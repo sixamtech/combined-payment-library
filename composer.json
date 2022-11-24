@@ -27,7 +27,6 @@
         "stripe/stripe-php": "^10.0",
         "razorpay/razorpay": "dev-master",
         "unicodeveloper/laravel-paystack": "dev-master",
-        "mercadopago/dx-php": "dev-master",
-        "flutterwavedev/flutterwave-v3": "dev-master"
+        "mercadopago/dx-php": "dev-master"
     }
 }
