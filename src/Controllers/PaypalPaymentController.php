@@ -4,141 +4,70 @@ namespace Mdalimrun\CombinedPaymentLibrary\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Str;
+use Srmklive\PayPal\Services\ExpressCheckout;
 
 class PaypalPaymentController extends Controller
 {
     public function __construct()
     {
-        $paypal_conf = Config::get('paypal');
-        $this->_api_context = new ApiContext(new OAuthTokenCredential(
-                $paypal_conf['client_id'],
-                $paypal_conf['secret'])
-        );
-        $this->_api_context->setConfig($paypal_conf['settings']);
+
     }
 
-    public function payWithpaypal(Request $request)
+    /**
+     * Responds with a welcome message with instructions
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function payment()
     {
-        $order = Order::with(['details'])->where(['id' => $request->order_id])->first();
-        $tr_ref = Str::random(6) . '-' . rand(1, 1000);
+        $data = [];
+        $data['items'] = [
+            [
+                'name' => 'ItSolutionStuff.com',
+                'price' => 100,
+                'desc'  => 'Description for ItSolutionStuff.com',
+                'qty' => 1
+            ]
+        ];
 
-        $payer = new Payer();
-        $payer->setPaymentMethod('paypal');
+        $data['invoice_id'] = 1;
+        $data['invoice_description'] = "Order #{$data['invoice_id']} Invoice";
+        $data['return_url'] = route('payment.success');
+        $data['cancel_url'] = route('payment.cancel');
+        $data['total'] = 100;
 
-        $items_array = [];
-        $item = new Item();
-        $item->setName($order->customer['f_name'])
-            ->setCurrency(Helpers::currency_code())
-            ->setQuantity(1)
-            ->setPrice($order['order_amount']);
-        array_push($items_array, $item);
+        $provider = new ExpressCheckout;
 
-        $item_list = new ItemList();
-        $item_list->setItems($items_array);
+        $response = $provider->setExpressCheckout($data);
 
-        $amount = new Amount();
-        $amount->setCurrency(Helpers::currency_code())
-            ->setTotal($order['order_amount']);
+        $response = $provider->setExpressCheckout($data, true);
 
-        \session()->put('transaction_reference', $tr_ref);
-        $transaction = new Transaction();
-        $transaction->setAmount($amount)
-            ->setItemList($item_list)
-            ->setDescription($tr_ref);
-
-        $redirect_urls = new RedirectUrls();
-        $redirect_urls->setReturnUrl(URL::route('paypal-status'))
-        ->setCancelUrl(URL::route('payment-fail'));
-
-        $payment = new Payment();
-        $payment->setIntent('Sale')
-            ->setPayer($payer)
-            ->setRedirectUrls($redirect_urls)
-            ->setTransactions(array($transaction));
-        try {
-            $payment->create($this->_api_context);
-
-            foreach ($payment->getLinks() as $link) {
-                if ($link->getRel() == 'approval_url') {
-                    $redirect_url = $link->getHref();
-                    break;
-                }
-            }
-
-            DB::table('orders')
-                ->where('id', $order->id)
-                ->update([
-                    'transaction_reference' => $payment->getId(),
-                    'payment_method' => 'paypal',
-                    'order_status' => 'failed',
-                    'failed' => now(),
-                    'updated_at' => now()
-                ]);
-
-            Session::put('paypal_payment_id', $payment->getId());
-            if (isset($redirect_url)) {
-                return Redirect::away($redirect_url);
-            }
-
-        } catch (\Exception $ex) {
-            Toastr::error(translate('messages.your_currency_is_not_supported',['method'=>translate('messages.paypal')]));
-            return back();
-        }
-
-        Session::put('error', translate('messages.config_your_account',['method'=>translate('messages.paypal')]));
-        return back();
+        return redirect($response['paypal_link']);
     }
 
-    public function getPaymentStatus(Request $request)
+    /**
+     * Responds with a welcome message with instructions
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function cancel()
     {
-        $payment_id = Session::get('paypal_payment_id');
-        if (empty($request['PayerID']) || empty($request['token'])) {
-            Session::put('error', translate('messages.payment_failed'));
-            return Redirect::back();
+        dd('Your payment is canceled. You can create cancel page here.');
+    }
+
+    /**
+     * Responds with a welcome message with instructions
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function success(Request $request)
+    {
+        $response = $provider->getExpressCheckoutDetails($request->token);
+
+        if (in_array(strtoupper($response['ACK']), ['SUCCESS', 'SUCCESSWITHWARNING'])) {
+            dd('Your payment was successfully. You can create success page here.');
         }
 
-        $payment = Payment::get($payment_id, $this->_api_context);
-        $execution = new PaymentExecution();
-        $execution->setPayerId($request['PayerID']);
-
-        /**Execute the payment **/
-        $result = $payment->execute($execution, $this->_api_context);
-        $order = Order::where('transaction_reference', $payment_id)->first();
-        if ($result->getState() == 'approved') {
-
-            $order->transaction_reference = $payment_id;
-            $order->payment_method = 'paypal';
-            $order->payment_status = 'paid';
-            $order->order_status = 'confirmed';
-            $order->confirmed = now();
-            $order->save();
-            try {
-                Helpers::send_order_notification($order);
-            } catch (\Exception $e) {
-            }
-
-
-
-            if ($order->callback != null) {
-                return redirect($order->callback . '&status=success');
-            }else{
-                return \redirect()->route('payment-success');
-            }
-        }
-
-        $order->order_status = 'failed';
-        $order->failed = now();
-        $order->save();
-        if ($order->callback != null) {
-            return redirect($order->callback . '&status=fail');
-        }else{
-            return \redirect()->route('payment-fail');
-        }
+        dd('Something is wrong.');
     }
 }
