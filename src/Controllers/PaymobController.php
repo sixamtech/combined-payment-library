@@ -106,7 +106,7 @@ class PaymobController extends Controller
         } catch (\Exception $exception) {
             return response()->json($this->response_formatter(DEFAULT_404), 200);
         }
-        return Redirect::away('https://portal.weaccept.co/api/acceptance/iframes/' . $this->config_values->iframe_id . '?payment_token=' . $paymentToken);
+        return Redirect::away('https://accept.paymob.com/api/acceptance/iframes/' . $this->config_values->iframe_id . '?payment_token=' . $paymentToken);
     }
 
     public function getToken()
@@ -217,7 +217,7 @@ class PaymobController extends Controller
         $secret = $this->config_values->hmac;
         $hased = hash_hmac('sha512', $connectedString, $secret);
 
-        if ($hased == $hmac) {
+        if ($hased == $hmac && $data['success'] === "true") {
             $data = $this->payment::where(['id' => session('payment_id')])->first();
             if (isset($data) && function_exists($data->hook)) {
                 call_user_func($data->hook, [
