@@ -58,7 +58,7 @@ class FlutterwaveV3Controller extends Controller
             'amount' => $data->payment_amount,
             'currency' => 'NGN',
             'payment_options' => 'card',
-            'redirect_url' => route('flutterwave-v3.callback'),
+            'redirect_url' => route('flutterwave-v3.callback', ['payment_id' => $data->id]),
             'customer' => [
                 'email' => $customer->email,
                 'name' => $customer->first_name . ' ' . $customer->last_name
@@ -85,7 +85,7 @@ class FlutterwaveV3Controller extends Controller
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS => json_encode($request),
             CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer FLWPUBK_TEST-1ddc55a878e84876c7191306367066d1-X',
+                'Authorization: Bearer ' . $this->config_values->secret_key,
                 'Content-Type: application/json'
             ),
         ));
@@ -96,10 +96,59 @@ class FlutterwaveV3Controller extends Controller
 
         $res = json_decode($response);
         if ($res->status == 'success') {
-            $link = $res->data->link;
-            header('Location: ' . $link);
+            return redirect()->away($res->data->link);
         }
 
         return 'We can not process your payment';
+    }
+
+    public function callback(Request $request)
+    {
+        if ($request['status'] == 'successful') {
+            $txid = $request['transaction_id'];
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => "https://api.flutterwave.com/v3/transactions/{$txid}/verify",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => "",
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => "GET",
+                CURLOPT_HTTPHEADER => array(
+                    "Content-Type: application/json",
+                    "Authorization: Bearer " . $this->config_values->secret_key,
+                ),
+            ));
+            $response = curl_exec($curl);
+            curl_close($curl);
+
+            $res = json_decode($response);
+            if ($res->status) {
+                $amountPaid = $res->data->charged_amount;
+                $amountToPay = $res->data->meta->price;
+                if ($amountPaid >= $amountToPay) {
+                    $data = $this->payment::where(['id' => $request['payment_id']])->first();
+                    if (isset($data) && function_exists($data->hook)) {
+                        call_user_func($data->hook, [
+                            'payment_method' => 'flutterwave',
+                            'transaction_id' => $txid,
+                            'payment_id' => $request->input('payment_id'),
+                        ]);
+                        $this->payment::where(['id' => $request['payment_id']])->update([
+                            'payment_method' => 'flutterwave',
+                            'is_paid' => 1,
+                            'transaction_id' => $txid,
+                        ]);
+                    }
+                    if ($data['callback'] != null) {
+                        return redirect($data['callback'] . '?payment_status=success');
+                    }
+                    return response()->json($this->response_formatter(DEFAULT_200), 200);
+                }
+            }
+        }
+        return response()->json($this->response_formatter(DEFAULT_404), 200);
     }
 }
