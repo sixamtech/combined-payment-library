@@ -5,9 +5,13 @@ namespace Mdalimrun\CombinedPaymentLibrary;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\ServiceProvider;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\BkashPaymentController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\FlutterwaveV3Controller;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\LiqPayController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\MercadoPagoController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\PaymobController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\PaypalPaymentController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaystackController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\PaytabsController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaytmController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\RazorPayController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\SenangPayController;
@@ -49,6 +53,10 @@ class PaymentServiceProvider extends ServiceProvider
         $this->app->make(BkashPaymentController::class);
         $this->app->make(LiqPayController::class);
         $this->app->make(MercadoPagoController::class);
+        $this->app->make(PaypalPaymentController::class);
+        $this->app->make(PaytabsController::class);
+        $this->app->make(PaymobController::class);
+        $this->app->make(FlutterwaveV3Controller::class);
 
         // Models
         $this->app->make(Payment::class);

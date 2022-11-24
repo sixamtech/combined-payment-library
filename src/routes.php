@@ -8,6 +8,7 @@ use Mdalimrun\CombinedPaymentLibrary\Controllers\MercadoPagoController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaymobController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaypalPaymentController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaystackController;
+use Mdalimrun\CombinedPaymentLibrary\Controllers\PaytabsController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\PaytmController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\RazorPayController;
 use Mdalimrun\CombinedPaymentLibrary\Controllers\SenangPayController;
@@ -96,6 +97,13 @@ Route::group(['prefix' => 'payment'], function () {
     Route::group(['prefix' => 'paymob', 'as' => 'paymob.'], function () {
         Route::any('pay', [PaymobController::class, 'credit'])->name('pay');
         Route::any('callback', [PaymobController::class, 'callback'])->name('callback');
+    });
+
+    // paymob
+    Route::group(['prefix' => 'paytabs', 'as' => 'paytabs.'], function () {
+        Route::any('pay', [PaytabsController::class, 'payment'])->name('pay');
+        Route::any('callback', [PaytabsController::class, 'callback'])->name('callback');
+        Route::any('response', [PaytabsController::class, 'response'])->name('response');
     });
 
 });
